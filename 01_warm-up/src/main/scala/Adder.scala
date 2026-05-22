@@ -24,11 +24,23 @@ class HalfAdder extends Module{
     /* 
      * TODO: Define IO ports of a half adder as presented in the lecture
      */
-    })
+    
+    //Inputs
+    val a = Input(Bool())
+    val b = Input(Bool())
+
+    //Outputs
+    val s= Output(Bool())
+    val co = Output(Bool())
+  })
 
   /* 
    * TODO: Describe output behaviour based on the input values
    */
+
+  //Combinational Logic
+  io.s := io.a ^ io.b
+  io.co := io.a & io.b
 
 }
 
@@ -49,17 +61,38 @@ class FullAdder extends Module{
     /* 
      * TODO: Define IO ports of a half adder as presented in the lecture
      */
+    //Inputs
+    val a = Input(Bool())
+    val b = Input(Bool())
+    val ci = Input(Bool())
+
+    //Outputs
+    val s = Output(Bool())
+    val co = Output(Bool())
+
     })
 
 
   /* 
    * TODO: Instanciate the two half adders you want to use based on your HalfAdder class
    */
+  val ha1 = Module(new HalfAdder)
+  val ha2 = Module(new HalfAdder)
+
+  //First HalfAdder adds a and b
+  ha1.io.a := io.a
+  ha1.io.b := io.b
+
+  //Second HalfAdder adds intermediate sum and carry input
+  ha2.io.a := ha1.io.s
+  ha2.io.b := io.ci
 
 
   /* 
    * TODO: Describe output behaviour based on the input values and the internal signals
    */
+  io.s := ha2.io.s
+  io.co := ha1.io.co | ha2.io.co
 
 }
 
