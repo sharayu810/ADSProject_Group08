@@ -112,14 +112,48 @@ class FourBitAdder extends Module{
     /* 
      * TODO: Define IO ports of a 4-bit ripple-carry-adder as presented in the lecture
      */
+    //Inputs
+    val a = Input(UInt(4.W))
+    val b = Input(UInt(4.W))
+
+    //Outputs
+    val s = Output(UInt(4.W))
+    val co = Output(UInt(1.W))
+
     })
 
   /* 
    * TODO: Instanciate the full adders and one half adderbased on the previously defined classes
    */
+  val ha = Module(new HalfAdder)
+  val fa1 = Module(new FullAdder)
+  val fa2 = Module(new FullAdder)
+  val fa3 = Module(new FullAdder)   
 
+  //First HalfAdder adds the least significant bits of a and b
+  ha.io.a := io.a(0).asUInt
+  ha.io.b := io.b(0).asUInt
+
+  //First FullAdder adds the second least significant bits of a and b and the carry-out of the first half adder
+  fa1.io.a  := io.a(1).asUInt
+  fa1.io.b  := io.b(1).asUInt
+  fa1.io.ci := ha.io.co 
+
+  //Second FullAdder adds the third least significant bits of a and b and the carry-out of the first full adder
+
+  fa2.io.a  := io.a(2).asUInt
+  fa2.io.b  := io.b(2).asUInt
+  fa2.io.ci := fa1.io.co    
+
+  //Third FullAdder adds the most significant bits of a and b and the carry-out of the second full adder
+  fa3.io.a  := io.a(3).asUInt
+  fa3.io.b  := io.b(3).asUInt
+  fa3.io.ci := fa2.io.co    
 
   /* 
    * TODO: Describe output behaviour based on the input values and the internal 
    */
+  io.s := Cat(fa3.io.s, fa2.io.s, fa1.io.s, ha.io.s)
+  io.co := fa3.io.co  
+
 }
