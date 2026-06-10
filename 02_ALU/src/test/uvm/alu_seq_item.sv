@@ -13,9 +13,27 @@ class alu_seq_item extends uvm_sequence_item;
 
     //ToDo: define the fields of the sequence item
 
+    //Randomized input fields
+    rand bit [31:0] operandA;    // first ALU operand  (any 32-bit value)
+    rand bit [31:0] operandB;    // second ALU operand (any 32-bit value)
+    rand ALUOp      operation;   // ALU operation (constrained to valid ops)
+
+    // Output field — not randomized; filled in by the scoreboard
+    bit [31:0] aluResult;        // expected result produced by the ALU
+
     //ToDo: register the class with the factory
+    `uvm_object_utils_begin(alu_seq_item)
+        `uvm_field_int  (operandA,          UVM_DEFAULT)
+        `uvm_field_int  (operandB,          UVM_DEFAULT)
+        `uvm_field_enum (ALUOp, operation,  UVM_DEFAULT)
+        `uvm_field_int  (aluResult,         UVM_DEFAULT)
+    `uvm_object_utils_end
 
     //ToDo: add constraint for operation field
+    constraint aluOp_constraint {
+        operation inside {ADD, SUB, AND, OR, XOR,
+        SLL, SRL, SRA, SLT, SLTU, PASSB};
+    }
 
     virtual function string convert2str();
         return $sformatf("operandA: 0x%0x, operandB: 0x%0x, operation: %0p, aluResult: 0x%0x", operandA, operandB, operation, aluResult);
