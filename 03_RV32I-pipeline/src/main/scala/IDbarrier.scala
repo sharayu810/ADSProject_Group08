@@ -40,3 +40,28 @@ import uopc._
 // -----------------------------------------
 
 //ToDo: Add your implementation according to the specification above here 
+class IDBarrier extends Module {
+  val io = IO(new Bundle {
+    val inUOP          = Input(uopc())
+    val inRD           = Input(UInt(5.W))
+    val inOperandA     = Input(UInt(32.W))
+    val inOperandB     = Input(UInt(32.W))
+    val inXcptInvalid  = Input(Bool())
+    val outUOP         = Output(uopc())
+    val outRD          = Output(UInt(5.W))
+    val outOperandA    = Output(UInt(32.W))
+    val outOperandB    = Output(UInt(32.W))
+    val outXcptInvalid = Output(Bool())
+  })
+  val uopR  = RegInit(uopc.isNOP)
+  val rdR   = RegInit(0.U(5.W))
+  val aR    = RegInit(0.U(32.W))
+  val bR    = RegInit(0.U(32.W))
+  val xR    = RegInit(false.B)
+
+  uopR := io.inUOP;        rdR := io.inRD
+  aR   := io.inOperandA;   bR  := io.inOperandB;   xR := io.inXcptInvalid
+
+  io.outUOP := uopR;       io.outRD := rdR
+  io.outOperandA := aR;    io.outOperandB := bR;   io.outXcptInvalid := xR
+}

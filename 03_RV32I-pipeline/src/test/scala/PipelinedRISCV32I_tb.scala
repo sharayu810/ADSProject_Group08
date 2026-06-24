@@ -104,7 +104,47 @@ class PipelinedRISCV32ITest extends AnyFlatSpec with ChiselScalatestTester {
       dut.clock.step(1)
       dut.io.result.expect(1.U)     // SLTU x13, x5, x4
       dut.io.exception.expect(false.B)
-      dut.clock.step(1)           
+      dut.clock.step(1)   
+
+      // ===================== ADDED TEST CASES=====================
+
+
+      dut.io.result.expect("hFFFFFFFF".U)  // [29] ADDI  x14, x0, -1   (sign-extension)
+      dut.io.exception.expect(false.B)
+      dut.clock.step(1)
+      dut.io.result.expect(0.U)            // [30] NOP
+      dut.io.exception.expect(false.B)
+      dut.clock.step(1)
+      dut.io.result.expect(0.U)            // [31] NOP
+      dut.io.exception.expect(false.B)
+      dut.clock.step(1)
+      dut.io.result.expect(0.U)            // [32] NOP
+      dut.io.exception.expect(false.B)
+      dut.clock.step(1)
+      dut.io.result.expect(15.U)           // [33] ANDI  x15, x14, 15  (0xFFFFFFFF & 0x0F)
+      dut.io.exception.expect(false.B)
+      dut.clock.step(1)
+      dut.io.result.expect(15.U)           // [34] ORI   x16, x0, 15
+      dut.io.exception.expect(false.B)
+      dut.clock.step(1)
+      dut.io.result.expect("hFFFFFFF0".U)  // [35] XORI  x17, x14, 15  (0xFFFFFFFF ^ 0x0F)
+      dut.io.exception.expect(false.B)
+      dut.clock.step(1)
+      dut.io.result.expect(40.U)           // [36] SLLI  x18, x2, 3    (5 << 3)
+      dut.io.exception.expect(false.B)
+      dut.clock.step(1)
+      dut.io.result.expect(15.U)           // [37] SRLI  x19, x14, 28  (logical >>)
+      dut.io.exception.expect(false.B)
+      dut.clock.step(1)
+      dut.io.result.expect("hFFFFFFFF".U)  // [38] SRAI  x20, x14, 28  (arithmetic >>, sign-fill)
+      dut.io.exception.expect(false.B)
+      dut.clock.step(1)
+      dut.io.result.expect(1.U)            // [39] SLTI  x21, x5, 100  (16 < 100 signed)
+      dut.io.exception.expect(false.B)
+      dut.clock.step(1)
+      dut.io.result.expect(0.U)            // [40] SLTIU x22, x14, 1   (0xFFFFFFFF < 1 unsigned? no)
+      dut.io.exception.expect(false.B)
+      dut.clock.step(1)    
     }
   }
 }

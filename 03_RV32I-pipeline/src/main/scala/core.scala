@@ -59,8 +59,65 @@ import uopc._
 class PipelinedRV32Icore (BinaryFile: String) extends Module {
   val io = IO(new Bundle {
     //ToDo: Add I/O ports
+    val check_res = Output(UInt(32.W))
+    val exception = Output(Bool())
+
   })
 
 //ToDo: Add your implementation according to the specification above here 
+  val fetch  = Module(new IF(BinaryFile))
+  val ifBar  = Module(new IFBarrier)
+  val decode = Module(new ID)
+  val idBar  = Module(new IDBarrier)
+  val exec   = Module(new EX)
+  val exBar  = Module(new EXBarrier)
+  val mem    = Module(new MEM)
+  val memBar = Module(new MEMBarrier)
+  val wb     = Module(new WB)
+  val wbBar  = Module(new WBBarrier)
+  val rf     = Module(new regFile)
 
+  // IF -> IF/ID -> ID
+  ifBar.io.inInstr := fetch.io.instr
+  decode.io.instr  := ifBar.io.outInstr
+
+  // ID <-> regFile read ports
+  rf.io.req_1 := decode.io.regFileReq_A
+  rf.io.req_2 := decode.io.regFileReq_B
+  decode.io.regFileResp_A := rf.io.resp_1
+  decode.io.regFileResp_B := rf.io.resp_2
+
+  // ID -> ID/EX -> EX
+  idBar.io.inUOP         := decode.io.uop
+  idBar.io.inRD          := decode.io.rd
+  idBar.io.inOperandA    := decode.io.operandA
+  idBar.io.inOperandB    := decode.io.operandB
+  idBar.io.inXcptInvalid := decode.io.xcptInvalid
+
+  exec.io.uop         := idBar.io.outUOP
+  exec.io.rd          := idBar.io.outRD
+  exec.io.operandA    := idBar.io.outOperandA
+  exec.io.operandB    := idBar.io.outOperandB
+  exec.io.xcptInvalid := idBar.io.outXcptInvalid
+
+  // EX -> EX/MEM -> (MEM empty) -> MEM/WB
+  exBar.io.inAluResult   := exec.io.aluResult
+  exBar.io.inRD          := exec.io.rd_out
+  exBar.io.inXcptInvalid := exec.io.xcptInvalid_out
+
+  memBar.io.inAluResult := exBar.io.outAluResult
+  memBar.io.inRD        := exBar.io.outRD
+  memBar.io.inException := exBar.io.outXcptInvalid
+
+  // MEM/WB -> WB -> regFile write
+  wb.io.aluResult := memBar.io.outAluResult
+  wb.io.rd        := memBar.io.outRD
+  rf.io.req_3     := wb.io.regFileReq
+
+  // WB -> WB/Barrier -> outputs
+  wbBar.io.inCheckRes    := wb.io.check_res
+  wbBar.io.inXcptInvalid := memBar.io.outException
+
+  io.check_res := wbBar.io.outCheckRes
+  io.exception := wbBar.io.outXcptInvalid
 }
