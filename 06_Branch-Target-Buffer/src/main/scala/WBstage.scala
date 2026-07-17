@@ -41,3 +41,24 @@ import chisel3._
 // -----------------------------------------
 
 //ToDo: Add your implementation according to the specification above here 
+class WB extends Module {
+  val io = IO(new Bundle {
+    val aluResult     = Input(UInt(32.W))  //Receives the result computed by the ALU.
+    val rd            = Input(UInt(5.W))  //Destination register number
+    val inXcptInvalid = Input(Bool())
+
+    val regFileReq = Output(new regFileWriteReq)
+
+    val check_res = Output(UInt(32.W))
+    val exception = Output(Bool())
+  })
+
+  io.regFileReq.addr  := io.rd                        //Where to write
+
+  io.regFileReq.data  := io.aluResult                 //What to write
+
+  io.regFileReq.wr_en := !io.inXcptInvalid            //Writes if there is no exception
+
+  io.check_res := io.aluResult                        //check_res: result value for verification
+  io.exception := io.inXcptInvalid
+}
