@@ -42,9 +42,23 @@ import chisel3.util.experimental.loadMemoryFromFile
 
 class IF (BinaryFile: String) extends Module {
   val io = IO(new Bundle {
-    // ToDo: Add I/O ports
+    val redirect    = Input(Bool())
+    val redirectPC  = Input(UInt(32.W))
+    val instr       = Output(UInt(32.W))
+    val pc          = Output(UInt(32.W))
   })
 
-//ToDo: Add your implementation according to the specification above here 
-  
+  val PC = RegInit(0.U(32.W))
+
+  val IMem = Mem(4096, UInt(32.W))
+  loadMemoryFromFile(IMem, BinaryFile)
+
+  io.instr := IMem(PC(13, 2)) //////////////////check
+  io.pc    := PC   //This sends the current PC value outside the IF stage.
+
+  when(io.redirect) {
+    PC := io.redirectPC
+  }.otherwise {
+    PC := PC + 4.U
+  }
 }

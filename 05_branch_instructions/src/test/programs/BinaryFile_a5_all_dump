@@ -1,0 +1,112 @@
+00500093 // ADDI x1, x0, 5
+00500113 // ADDI x2, x0, 5
+00000193 // ADDI x3, x0, 0
+00208663 // BEQ x1, x2, +12      ; taken
+38500293 // ADDI x5, x0, 901     ; wrong-path marker, must not appear
+38600293 // ADDI x5, x0, 902     ; wrong-path marker, must not appear
+06500293 // ADDI x5, x0, 101     ; BEQ taken marker
+00500093 // ADDI x1, x0, 5
+00600113 // ADDI x2, x0, 6
+00000193 // ADDI x3, x0, 0
+00208663 // BEQ x1, x2, +12      ; not taken
+06600293 // ADDI x5, x0, 102
+06700293 // ADDI x5, x0, 103
+06800293 // ADDI x5, x0, 104
+00500093 // ADDI x1, x0, 5
+00600113 // ADDI x2, x0, 6
+00000193 // ADDI x3, x0, 0
+00209663 // BNE x1, x2, +12      ; taken
+38700293 // ADDI x5, x0, 903     ; wrong-path marker, must not appear
+38800293 // ADDI x5, x0, 904     ; wrong-path marker, must not appear
+06900293 // ADDI x5, x0, 105
+00500093 // ADDI x1, x0, 5
+00500113 // ADDI x2, x0, 5
+00000193 // ADDI x3, x0, 0
+00209663 // BNE x1, x2, +12      ; not taken
+06a00293 // ADDI x5, x0, 106
+06b00293 // ADDI x5, x0, 107
+06c00293 // ADDI x5, x0, 108
+fff00093 // ADDI x1, x0, -1
+00100113 // ADDI x2, x0, 1
+00000193 // ADDI x3, x0, 0
+0020c663 // BLT x1, x2, +12      ; taken signed
+38900293 // ADDI x5, x0, 905     ; wrong-path marker, must not appear
+38a00293 // ADDI x5, x0, 906     ; wrong-path marker, must not appear
+06d00293 // ADDI x5, x0, 109
+00100093 // ADDI x1, x0, 1
+fff00113 // ADDI x2, x0, -1
+00000193 // ADDI x3, x0, 0
+0020c663 // BLT x1, x2, +12      ; not taken signed
+06e00293 // ADDI x5, x0, 110
+06f00293 // ADDI x5, x0, 111
+07000293 // ADDI x5, x0, 112
+00100093 // ADDI x1, x0, 1
+fff00113 // ADDI x2, x0, -1
+00000193 // ADDI x3, x0, 0
+0020d663 // BGE x1, x2, +12      ; taken signed
+38b00293 // ADDI x5, x0, 907     ; wrong-path marker, must not appear
+38c00293 // ADDI x5, x0, 908     ; wrong-path marker, must not appear
+07100293 // ADDI x5, x0, 113
+fff00093 // ADDI x1, x0, -1
+00100113 // ADDI x2, x0, 1
+00000193 // ADDI x3, x0, 0
+0020d663 // BGE x1, x2, +12      ; not taken signed
+07200293 // ADDI x5, x0, 114
+07300293 // ADDI x5, x0, 115
+07400293 // ADDI x5, x0, 116
+fff00093 // ADDI x1, x0, -1
+00100113 // ADDI x2, x0, 1
+00000193 // ADDI x3, x0, 0
+00116663 // BLTU x2, x1, +12     ; taken unsigned
+38d00293 // ADDI x5, x0, 909     ; wrong-path marker, must not appear
+38e00293 // ADDI x5, x0, 910     ; wrong-path marker, must not appear
+07500293 // ADDI x5, x0, 117
+fff00093 // ADDI x1, x0, -1
+00100113 // ADDI x2, x0, 1
+00000193 // ADDI x3, x0, 0
+0020e663 // BLTU x1, x2, +12     ; not taken unsigned
+07600293 // ADDI x5, x0, 118
+07700293 // ADDI x5, x0, 119
+07800293 // ADDI x5, x0, 120
+fff00093 // ADDI x1, x0, -1
+00100113 // ADDI x2, x0, 1
+00000193 // ADDI x3, x0, 0
+0020f663 // BGEU x1, x2, +12     ; taken unsigned
+38f00293 // ADDI x5, x0, 911     ; wrong-path marker, must not appear
+39000293 // ADDI x5, x0, 912     ; wrong-path marker, must not appear
+07900293 // ADDI x5, x0, 121
+fff00093 // ADDI x1, x0, -1
+00100113 // ADDI x2, x0, 1
+00000193 // ADDI x3, x0, 0
+00117663 // BGEU x2, x1, +12     ; not taken unsigned
+07a00293 // ADDI x5, x0, 122
+07b00293 // ADDI x5, x0, 123
+07c00293 // ADDI x5, x0, 124
+00700093 // ADDI x1, x0, 7
+00700113 // ADDI x2, x0, 7
+00208663 // BEQ x1, x2, +12      ; tests forwarding into branch operands
+39100293 // ADDI x5, x0, 913     ; wrong-path marker, must not appear
+39200293 // ADDI x5, x0, 914     ; wrong-path marker, must not appear
+07d00293 // ADDI x5, x0, 125
+00300313 // ADDI x6, x0, 3       ; loop counter
+00000393 // ADDI x7, x0, 0       ; loop accumulator
+00138393 // ADDI x7, x7, 1
+fff30313 // ADDI x6, x6, -1
+fe031ce3 // BNE x6, x0, -8       ; backward branch
+07b38293 // ADDI x5, x7, 123     ; 3 + 123 = 126
+00c0006f // JAL x0, +12          ; forward jump
+39300293 // ADDI x5, x0, 915     ; wrong-path marker, must not appear
+39400293 // ADDI x5, x0, 916     ; wrong-path marker, must not appear
+08100293 // ADDI x5, x0, 129
+00100413 // ADDI x8, x0, 1
+00040663 // BEQ x8, x0, +12      ; not taken before backward JAL loop
+fff40413 // ADDI x8, x8, -1
+ff9ff06f // JAL x0, -8           ; backward jump
+08200293 // ADDI x5, x0, 130
+1b900493 // ADDI x9, x0, 441     ; JALR target address
+00000193 // ADDI x3, x0, 0
+00048067 // JALR x0, 0(x9)
+39500293 // ADDI x5, x0, 917     ; wrong-path marker, must not appear
+39600293 // ADDI x5, x0, 918     ; wrong-path marker, must not appear
+08300293 // ADDI x5, x0, 131
+08400293 // ADDI x5, x0, 132

@@ -41,21 +41,56 @@ Special Case for hazard resolution:
 
 class regFileReadReq extends Bundle {
     //ToDo: implement bundle for read request
+    val addr = Input(UInt(5.W))            //addr tells the register file which register to read.
 }
 
 class regFileReadResp extends Bundle {
     //ToDo: implement bundle for read response
+    val data = Output(UInt(32.W))          //data gives the value stored in the selected register.
 }
 
 class regFileWriteReq extends Bundle {
     //ToDo: implement bundle for write request
+    val addr  = Input(UInt(5.W))             //Which register to write.
+    val data  = Input(UInt(32.W))           //what value to write
+    val wr_en = Input(Bool())               //write enable
 }
 
 class regFile extends Module {
   val io = IO(new Bundle {
     //ToDo: Add I/O ports 
+    val req_1  = new regFileReadReq
+    val resp_1 = new regFileReadResp
+
+    val req_2  = new regFileReadReq
+    val resp_2 = new regFileReadResp
+
+    val req_3  = new regFileWriteReq
 })
 
 //ToDo: Add your implementation according to the specification above here 
+    val registers = RegInit(VecInit(Seq.fill(32)(0.U(32.W))))  // Create 32 registers, each 32-bit wide, initialized to 0
 
+    io.resp_1.data := Mux(
+    io.req_1.addr === 0.U,
+    0.U,
+    Mux(             //Same-cycle Read and Write
+        io.req_3.wr_en && (io.req_3.addr =/= 0.U) && (io.req_3.addr === io.req_1.addr),
+        io.req_3.data,             //write and read
+        registers(io.req_1.addr)   //normal read
+    )
+    )
+
+    io.resp_2.data := Mux(
+    io.req_2.addr === 0.U,
+    0.U,
+    Mux(
+        io.req_3.wr_en && (io.req_3.addr =/= 0.U) && (io.req_3.addr === io.req_2.addr),
+        io.req_3.data,
+        registers(io.req_2.addr)
+    )
+    )
+    when(io.req_3.wr_en && io.req_3.addr =/= 0.U) {
+        registers(io.req_3.addr) := io.req_3.data    // Write port: write data only when write enable is true and destination is not x0
+    }
 }
