@@ -41,3 +41,53 @@ import uopc._
 // -----------------------------------------
 
 //ToDo: Add your implementation according to the specification above here 
+class EX extends Module {
+  val io = IO(new Bundle {
+    val uop             = Input(uopc())
+    val operandA        = Input(UInt(32.W))
+    val operandB        = Input(UInt(32.W))
+    val rd              = Input(UInt(5.W))
+    val xcptInvalid     = Input(Bool())
+    val forwardA        = Input(UInt(2.W))    // NEW: mux select for A
+    val forwardB        = Input(UInt(2.W))    // NEW: mux select for B
+    val fwdEXMEM        = Input(UInt(32.W))   // NEW: value from EX/MEM barrier
+    val fwdMEMWB        = Input(UInt(32.W))   // NEW: value from MEM/WB barrier
+    val aluResult       = Output(UInt(32.W))
+    val rd_out          = Output(UInt(5.W))
+    val xcptInvalid_out = Output(Bool())
+  })
+
+  val alu   = Module(new ALU)
+  val aluOp = WireDefault(ALUOp.ADD)
+
+  switch(io.uop) {
+    is(uopc.isADD,  uopc.isADDI)  { aluOp := ALUOp.ADD }
+    is(uopc.isSUB)                { aluOp := ALUOp.SUB }
+    is(uopc.isAND,  uopc.isANDI)  { aluOp := ALUOp.AND }
+    is(uopc.isOR,   uopc.isORI)   { aluOp := ALUOp.OR }
+    is(uopc.isXOR,  uopc.isXORI)  { aluOp := ALUOp.XOR }
+    is(uopc.isSLL,  uopc.isSLLI)  { aluOp := ALUOp.SLL }
+    is(uopc.isSRL,  uopc.isSRLI)  { aluOp := ALUOp.SRL }
+    is(uopc.isSRA,  uopc.isSRAI)  { aluOp := ALUOp.SRA }
+    is(uopc.isSLT,  uopc.isSLTI)  { aluOp := ALUOp.SLT }
+    is(uopc.isSLTU, uopc.isSLTIU) { aluOp := ALUOp.SLTU }
+    // isNOP falls through to ADD; result is discarded (rd = x0)
+  }
+
+// Forwarding muxes: pick regfile value, EX/MEM forward, or MEM/WB forward.
+  val opA = Mux(io.forwardA === "b10".U, io.fwdEXMEM,
+            Mux(io.forwardA === "b01".U, io.fwdMEMWB, io.operandA))
+  val opB = Mux(io.forwardB === "b10".U, io.fwdEXMEM,
+            Mux(io.forwardB === "b01".U, io.fwdMEMWB, io.operandB))
+
+
+  alu.io.operandA  := opA
+  alu.io.operandB  := opB
+  alu.io.operation := aluOp
+
+  io.aluResult       := alu.io.aluResult
+  io.rd_out          := io.rd
+  io.xcptInvalid_out := io.xcptInvalid
+}
+
+

@@ -42,8 +42,15 @@ import chisel3.util.experimental.loadMemoryFromFile
 class IF (BinaryFile: String) extends Module {
   val io = IO(new Bundle {
     // ToDo: Add I/O ports
+    val instr = Output(UInt(32.W))
   })
 
 //ToDo: Add your implementation according to the specification above here 
-  
+val IMem = Mem(4096, UInt(32.W))
+loadMemoryFromFile(IMem, BinaryFile)
+
+val PC = RegInit(0.U(32.W))
+
+  io.instr := IMem(PC)   // output the instruction at the current PC (word-indexed)
+  PC := PC + 1.U         // advance PC by one word for the next cycle
 }

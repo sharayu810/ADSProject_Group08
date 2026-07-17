@@ -27,21 +27,29 @@ class PipelinedRISCV32ITest extends AnyFlatSpec with ChiselScalatestTester {
       dut.io.result.expect(5.U)     // ADDI x2, x0, 5
       dut.io.exception.expect(false.B)
       dut.clock.step(1)
-      dut.io.result.expect(9.U)     // ADD x3, x1, x2
+
+      // ---- Scenario 1: operand A from MEM/WB (rs1 d2) AND operand B from EX/MEM (rs2 d1) ----
+      dut.io.result.expect(9.U)     // ADD x3, x1, x2     
       dut.io.exception.expect(false.B)
       dut.clock.step(1)
+
       dut.io.result.expect(2047.U)  // ADDI x4, x0, 2047
       dut.io.exception.expect(false.B)
       dut.clock.step(1)
       dut.io.result.expect(16.U)    // ADDI x5, x0, 16
       dut.io.exception.expect(false.B)
       dut.clock.step(1)
+
+      // ---- Scenario 2: operand A from MEM/WB (rs1 d2) AND operand B from EX/MEM (rs2 d1) ----
       dut.io.result.expect(2031.U)  // SUB x6, x4, x5
       dut.io.exception.expect(false.B)
       dut.clock.step(1)
+
+      // ---- Scenario 3: operand A from EX/MEM (rs1 d1) ----
       dut.io.result.expect(2022.U)  // XOR x7, x6, x3
       dut.io.exception.expect(false.B)
       dut.clock.step(1)
+
       dut.io.result.expect(2047.U)  // OR x8, x6, x5
       dut.io.exception.expect(false.B)
       dut.clock.step(1)
@@ -74,7 +82,35 @@ class PipelinedRISCV32ITest extends AnyFlatSpec with ChiselScalatestTester {
       dut.clock.step(1)
       dut.io.result.expect(1.U)     // SLTU x13, x5, x4
       dut.io.exception.expect(false.B)
-      dut.clock.step(1)           
+      dut.clock.step(1)   
+      dut.io.result.expect("hFFFFFFFF".U)  // [19] ADDI x14, x0, -1
+      dut.io.exception.expect(false.B)
+      dut.clock.step(1)
+
+     // ---- Scenario 4: operand B from MEM/WB (rs2, distance-2) ----
+      dut.io.result.expect(6.U)            // [20] ADDI x20,x0,6   (producer)
+      dut.io.exception.expect(false.B)
+      dut.clock.step(1)
+      dut.io.result.expect(0.U)            // [21] ADDI x29,x0,0   
+      dut.io.exception.expect(false.B)
+      dut.clock.step(1)
+      dut.io.result.expect(10.U)           // [22] ADD x23,x1,x20  rs2=x20 d2 -> B<-MEM/WB; 4+6=10
+      dut.io.exception.expect(false.B)
+      dut.clock.step(1)
+
+     // ---- Chained: both operands from EX/MEM (distance-1) ----
+      dut.io.result.expect(1.U)            // [23] ADDI x7,x0,1
+      dut.io.exception.expect(false.B)
+      dut.clock.step(1)
+      dut.io.result.expect(2.U)            // [24] ADD x7,x7,x7  (x7 d1 -> A and B from EX/MEM; 1->2)
+      dut.io.exception.expect(false.B)
+      dut.clock.step(1)
+      dut.io.result.expect(4.U)            // [25] ADD x7,x7,x7  (2->4)
+      dut.io.exception.expect(false.B)
+      dut.clock.step(1)
+      dut.io.result.expect(8.U)            // [26] ADD x7,x7,x7  (4->8)
+      dut.io.exception.expect(false.B)
+      dut.clock.step(1)
     }
   }
 }

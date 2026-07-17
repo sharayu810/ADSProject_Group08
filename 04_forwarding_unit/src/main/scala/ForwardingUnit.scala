@@ -39,8 +39,28 @@ import uopc._
 class ForwardingUnit extends Module {
   val io = IO(new Bundle {
     // Add I/O ports according to the specification above here
+    val rs1_EX   = Input(UInt(5.W))     // rs1 of instruction now in EX
+    val rs2_EX   = Input(UInt(5.W))     // rs2 of instruction now in EX (0 for I-type)
+    val rd_MEM   = Input(UInt(5.W))    // rd held in EX/MEM barrier (exBar)
+    val rd_WB    = Input(UInt(5.W))    // rd held in MEM/WB barrier (memBar)
+    val wrEn_MEM = Input(Bool())       // EX/MEM instruction writes back?
+    val wrEn_WB  = Input(Bool())       // MEM/WB instruction writes back?
+    val forwardA = Output(UInt(2.W))   // operand A select
+    val forwardB = Output(UInt(2.W))   // operand B select
   })
 
   //ToDo: Add your implementation according to the specification above here 
+   // Encoding (Patterson-Hennessy): 00 = regfile, 10 = from EX/MEM, 01 = from MEM/WB.
+  // *** If your slide 6-24 uses a different encoding, change these constants. ***
+  io.forwardA := "b00".U
+  io.forwardB := "b00".U
+
+  // MEM/WB checked first; EX/MEM checked second so it overrides (it is the newer result).
+  when(io.wrEn_WB  && io.rd_WB  =/= 0.U && io.rd_WB  === io.rs1_EX) { io.forwardA := "b01".U }
+  when(io.wrEn_MEM && io.rd_MEM =/= 0.U && io.rd_MEM === io.rs1_EX) { io.forwardA := "b10".U }
+
+  when(io.wrEn_WB  && io.rd_WB  =/= 0.U && io.rd_WB  === io.rs2_EX) { io.forwardB := "b01".U }
+  when(io.wrEn_MEM && io.rd_MEM =/= 0.U && io.rd_MEM === io.rs2_EX) { io.forwardB := "b10".U }
+  
 
 }

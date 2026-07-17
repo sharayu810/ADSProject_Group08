@@ -1,20 +1,27 @@
-00000013 // ADDI x0, x0, 0
-00400093 // ADDI x1, x0, 4
-00500113 // ADDI x2, x0, 5
-002081b3 // ADD x3, x1, x2
-7ff00213 // ADDI x4, x0, 2047
-01000293 // ADDI x5, x0, 16
-40520333 // SUB x6, x4, x5
-003343b3 // XOR x7, x6, x3
-00536433 // OR x8, x6, x5
-005374b3 // AND x9, x6, x5
-00239533 // SLL x10, x7, x2
-0023d5b3 // SRL x11, x7, x2
-4023d633 // SRA x12, x7, x2
-004226b3 // SLT x13, x4, x4
-005226b3 // SLT x13, x4, x5
-0042a6b3 // SLT x13, x5, x4
-004236b3 // SLTU x13, x4, x4
-005236b3 // SLTU x13, x4, x5
-0042b6b3 // SLTU x13, x5, x4
-021141b3 // DIV x3, x2, x1 (NOT IMPLEMENTED!)
+00000013 // [0]  ADDI x0, x0, 0      NOP (fill)
+00400093 // [1]  ADDI x1, x0, 4      x1 = 4
+00500113 // [2]  ADDI x2, x0, 5      x2 = 5
+002081b3 // [3]  ADD  x3, x1, x2     = 4 + 5 = 9         <- x1 dist-2 (A from MEM/WB), x2 dist-1 (B from EX/MEM)
+7ff00213 // [4]  ADDI x4, x0, 2047   x4 = 2047
+01000293 // [5]  ADDI x5, x0, 16     x5 = 16
+40520333 // [6]  SUB  x6, x4, x5     = 2047 - 16 = 2031  <- x4 dist-2 (A from MEM/WB), x5 dist-1 (B from EX/MEM)
+003343b3 // [7]  XOR  x7, x6, x3     = 2031 ^ 9 = 2022   <- x6 dist-1 (A from EX/MEM)
+00536433 // [8]  OR   x8, x6, x5     = 2031 | 16 = 2047
+005374b3 // [9]  AND  x9, x6, x5     = 2031 & 16 = 0
+00239533 // [10] SLL  x10, x7, x2    = 2022 << 5 = 64704
+0023d5b3 // [11] SRL  x11, x7, x2    = 2022 >> 5 = 63    (logical)
+4023d633 // [12] SRA  x12, x7, x2    = 2022 >> 5 = 63    (arithmetic, operand positive)
+004226b3 // [13] SLT  x13, x4, x4    = (2047 < 2047)? 0
+005226b3 // [14] SLT  x13, x4, x5    = (2047 < 16)?   0
+0042a6b3 // [15] SLT  x13, x5, x4    = (16 < 2047)?   1
+004236b3 // [16] SLTU x13, x4, x4    = (2047 < 2047) unsigned? 0
+005236b3 // [17] SLTU x13, x4, x5    = (2047 < 16) unsigned?   0
+0042b6b3 // [18] SLTU x13, x5, x4    = (16 < 2047) unsigned?   1
+fff00713 // [19] ADDI x14, x0, -1    x14 = 0xFFFFFFFF    (imm -1 sign-extended)
+00600a13 // [20] ADDI x20, x0, 6     x20 = 6             (producer for B-from-MEM/WB test)
+00000e93 // [21] ADDI x29, x0, 0     x29 = 0             (independent filler, dist-1)
+014083b3 // [22] ADD  x23, x1, x20   = 4 + 6 = 10        <- x20 dist-2 (B from MEM/WB); x1 read long ago (no fwd)
+00100393 // [23] ADDI x7, x0, 1      x7 = 1
+007383b3 // [24] ADD  x7, x7, x7     = 1 + 1 = 2         <- chained, x7 dist-1 (A and B from EX/MEM)
+007383b3 // [25] ADD  x7, x7, x7     = 2 + 2 = 4         <- chained, x7 dist-1 (A and B from EX/MEM)
+007383b3 // [26] ADD  x7, x7, x7     = 4 + 4 = 8         <- chained, x7 dist-1 (A and B from EX/MEM)

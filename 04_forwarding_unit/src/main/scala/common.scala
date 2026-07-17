@@ -28,3 +28,11 @@ import chisel3.experimental.ChiselEnum
 // -----------------------------------------
 
 //ToDo: Add your implementation according to the specification above here 
+object uopc extends ChiselEnum {
+  // isNOP first => numeric 0 => the natural default / reset value
+  val isNOP                                               = Value
+  // R-type
+  val isADD, isSUB, isAND, isOR, isXOR, isSLL, isSRL, isSRA, isSLT, isSLTU = Value
+  // I-type
+  val isADDI, isANDI, isORI, isXORI, isSLLI, isSRLI, isSRAI, isSLTI, isSLTIU = Value
+}
