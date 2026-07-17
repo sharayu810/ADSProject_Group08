@@ -19,12 +19,12 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]-->
 
-![CI Pipeline: 01 Warm-Up](https://github.com/sharayu810/ADSProject/actions/workflows/01_warm-up.yml/badge.svg?branch=main&event=push)
- ![CI Pipeline: 02 ALU](https://github.com/sharayu810/ADSProject/actions/workflows/02_ALU.yml/badge.svg?branch=main&event=push)
- ![CI Pipeline: 03 RV32I Pipeline](https://github.com/sharayu810/ADSProject/actions/workflows/03_RV32I-pipeline.yml/badge.svg?branch=main&event=push)
- ![CI Pipeline: 04 Forwarding Unit](https://github.com/sharayu810/ADSProject/actions/workflows/04_forwarding_unit.yml/badge.svg?branch=main&event=push)
- ![CI Pipeline: 05 Branch Instructions](https://github.com/sharayu810/ADSProject/actions/workflows/05_branch_instructions.yml/badge.svg?branch=main&event=push)
- ![CI Pipeline: 06 Branch Target Buffer](https://github.com/sharayu810/ADSProject/actions/workflows/06_Branch-Target-Buffer.yml/badge.svg?branch=main&event=push)
+![CI Pipeline: 01 Warm-Up](https://github.com/sharayu810/ADSProject_Group08/actions/workflows/01_warm-up.yml/badge.svg?branch=main&event=push)
+ ![CI Pipeline: 02 ALU](https://github.com/sharayu810/ADSProject_Group08/actions/workflows/02_ALU.yml/badge.svg?branch=main&event=push)
+ ![CI Pipeline: 03 RV32I Pipeline](https://github.com/sharayu810/ADSProject_Group08/actions/workflows/03_RV32I-pipeline.yml/badge.svg?branch=main&event=push)
+ ![CI Pipeline: 04 Forwarding Unit](https://github.com/sharayu810/ADSProject_Group08/actions/workflows/04_forwarding_unit.yml/badge.svg?branch=main&event=push)
+ ![CI Pipeline: 05 Branch Instructions](https://github.com/sharayu810/ADSProject_Group08/actions/workflows/05_branch_instructions.yml/badge.svg?branch=main&event=push)
+ ![CI Pipeline: 06 Branch Target Buffer](https://github.com/sharayu810/ADSProject_Group08/actions/workflows/06_Branch-Target-Buffer.yml/badge.svg?branch=main&event=push)
  
 <!--
 [![MIT License][license-shield]][license-url]
